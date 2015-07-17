@@ -174,7 +174,6 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
 
         response = {
             'status': response_status.alias,
-            'code': response_status.code,
             'data': data
         }
 
