@@ -66,7 +66,7 @@ UNKNOWN_STATUS = ServerResponseStatus('unknown_error', 'Unknown error', 500)
 
 def get_response_status_by_code(code):
     for status in STATUSES:
-        if code == status.code:
+        if code == status.http_code:
             return status
     return UNKNOWN_STATUS
 
