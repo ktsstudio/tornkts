@@ -1,6 +1,5 @@
 class ServerResponseStatus(object):
-    def __init__(self, code, alias, description, http_code=200):
-        self.code = code
+    def __init__(self, alias, description, http_code=200):
         self.alias = alias
         self.description = description
         self.http_code = http_code
@@ -30,9 +29,6 @@ class ServerError(Exception):
     def get_http_code(self):
         return self.status.http_code
 
-    def get_code(self):
-        return self.status.code
-
     def get_description(self):
         return self.description
 
@@ -50,22 +46,22 @@ class ServerError(Exception):
 
 
 STATUSES = [
-    ServerResponseStatus(0, 'ok', 'OK', 200),
+    ServerResponseStatus('ok', 'OK', 200),
 
-    ServerResponseStatus(10, 'auth_yet', 'Auth yet', 200),
-    ServerResponseStatus(13, 'not_auth', 'Not auth', 403),
-    ServerResponseStatus(14, 'role_forbidden', 'For your role access deny', 403),
-    ServerResponseStatus(16, 'too_many_requests', 'Too many requests', 403),
-    ServerResponseStatus(403, 'account_not_active', 'Account not active', 403),
+    ServerResponseStatus('auth_yet', 'Auth yet', 200),
+    ServerResponseStatus('not_auth', 'Not auth', 403),
+    ServerResponseStatus('role_forbidden', 'For your role access deny', 403),
+    ServerResponseStatus('too_many_requests', 'Too many requests', 403),
+    ServerResponseStatus('account_not_active', 'Account not active', 403),
 
-    ServerResponseStatus(400, 'bad_request', 'Bad request', 400),
-    ServerResponseStatus(400, 'invalid_param', 'Invalid param', 400),
-    ServerResponseStatus(403, 'forbidden', 'Forbidden', 403),
-    ServerResponseStatus(404, 'not_found', 'Not found', 404),
-    ServerResponseStatus(405, 'not_implemented', 'Not implemented', 405),
+    ServerResponseStatus('bad_request', 'Bad request', 400),
+    ServerResponseStatus('invalid_param', 'Invalid param', 400),
+    ServerResponseStatus('forbidden', 'Forbidden', 403),
+    ServerResponseStatus('not_found', 'Not found', 404),
+    ServerResponseStatus('not_implemented', 'Not implemented', 405),
 ]
 
-UNKNOWN_STATUS = ServerResponseStatus(500, 'unknown_error', 'Unknown error', 500)
+UNKNOWN_STATUS = ServerResponseStatus('unknown_error', 'Unknown error', 500)
 
 
 def get_response_status_by_code(code):

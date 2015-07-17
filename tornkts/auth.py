@@ -1,7 +1,8 @@
-__author__ = 'grigory51'
-
 import functools
+
+
 from tornkts.server_response import ServerError
+
 
 def need_role(role=[]):
     def generator(method):

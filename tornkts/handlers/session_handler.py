@@ -1,5 +1,6 @@
-__author__ = 'grigory51'
 import torndsession.session
+
+
 from tornado.web import RequestHandler
 
 
