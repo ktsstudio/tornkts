@@ -1,7 +1,6 @@
 import functools
 
-
-from tornkts.server_response import ServerError
+from tornkts.base.server_response import ServerError
 
 
 def need_role(role=[]):

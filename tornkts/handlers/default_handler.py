@@ -1,5 +1,5 @@
 from tornkts.handlers import BaseHandler
-from tornkts.server_response import ServerError
+from tornkts.base.server_response import ServerError
 
 
 class DefaultHandler(BaseHandler):
