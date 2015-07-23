@@ -35,18 +35,20 @@ class EmailQueue(BaseDocument):
             email.delete()
 
     def _send_mail(self, app):
-        host = app.settings["email_host"]
-        port = app.settings["email_port"]
-        username = app.settings["email_username"]
-        password = app.settings["email_password"]
+        settings = app.settings.get('email', {})
+
+        host = settings.get("host")
+        port = settings.get("port")
+        username = settings.get("username")
+        password = settings.get("password")
 
         smtpserver = smtplib.SMTP(host, port)
-
+        
         smtpserver.ehlo()
-        if app.settingsp['email_use_tls']:
+        if settings.get('use_tls'):
             smtpserver.starttls()
         if password:
             smtpserver.login(username, password)
-
+            
         smtpserver.sendmail(username, self.to, self.message)
         smtpserver.close()

@@ -5,7 +5,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='tornkts',
-    version='0.1.3',
+    version='0.1.4',
 
     description='Helper for tornado',
     long_description='Helper for tornado',
