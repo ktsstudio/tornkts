@@ -45,7 +45,8 @@ class EmailQueue(BaseDocument):
         smtpserver.ehlo()
         if app.settingsp['email_use_tls']:
             smtpserver.starttls()
-        smtpserver.login(username, password)
+        if password:
+            smtpserver.login(username, password)
 
         smtpserver.sendmail(username, self.to, self.message)
         smtpserver.close()
