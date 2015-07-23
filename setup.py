@@ -5,12 +5,12 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='tornkts',
-    version='0.1.0',
+    version='0.1.2',
 
     description='Helper for tornado',
     long_description='Helper for tornado',
 
-    author='KTSStudio',
+    author='KTS',
     author_email='team@ktsstudio.ru',
 
     license='MIT',
