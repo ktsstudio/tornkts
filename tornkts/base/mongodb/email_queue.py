@@ -1,14 +1,10 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
-
 from mongoengine import StringField, BooleanField
-
 from tornkts.base.mongodb.base_document import BaseDocument
 
-
 class EmailQueue(BaseDocument):
-
     message = StringField(required=True)
     to = StringField(required=True)
     sended = BooleanField(default=False)
@@ -39,13 +35,16 @@ class EmailQueue(BaseDocument):
             email.delete()
 
     def _send_mail(self, app):
+        host = app.settings["email_host"]
+        port = app.settings["email_port"]
         username = app.settings["email_username"]
         password = app.settings["email_password"]
 
-        smtpserver = smtplib.SMTP("smtp.gmail.com", 587)
+        smtpserver = smtplib.SMTP(host, port)
 
         smtpserver.ehlo()
-        smtpserver.starttls()
+        if app.settingsp['email_use_tls']:
+            smtpserver.starttls()
         smtpserver.login(username, password)
 
         smtpserver.sendmail(username, self.to, self.message)
