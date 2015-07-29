@@ -1,6 +1,5 @@
+from torndsession.filesession import FileSession
 import torndsession.session
-
-
 from tornado.web import RequestHandler
 
 
@@ -9,10 +8,12 @@ class SessionManager(torndsession.session.SessionManager):
 
     def __init__(self, handler):
         super(SessionManager, self).__init__(handler)
-        self._expires = None
 
     def destroy(self):
-        self.driver.client.delete(self.id)
+        if isinstance(self.driver, FileSession):
+            self.driver.clear(self.handler.get_cookie(self.SESSION_ID))
+        else:
+            self.driver.client.delete(self.id)
         self._is_dirty = False
 
 
@@ -36,8 +37,7 @@ class SessionHandler(RequestHandler, SessionMixin):
         self.session.destroy()
 
     def session_get(self, key, default=None):
-        result = self.session.get(key, default)
-        return result
+        return self.session.get(key, default)
 
     def session_set(self, key, value):
         self.session[key] = value
