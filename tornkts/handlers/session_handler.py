@@ -24,6 +24,8 @@ class SessionMixin(torndsession.session.SessionMixin):
 
 
 class SessionHandler(RequestHandler, SessionMixin):
+    was_change = False
+
     def __init__(self, application, request, **kwargs):
         super(SessionHandler, self).__init__(application, request, **kwargs)
 
@@ -31,7 +33,8 @@ class SessionHandler(RequestHandler, SessionMixin):
         pass
 
     def on_finish(self):
-        self.session.flush()  # try to save session
+        if self.was_change:
+            self.session.flush()  # try to save session
 
     def session_destroy(self):
         self.session.destroy()
@@ -40,7 +43,9 @@ class SessionHandler(RequestHandler, SessionMixin):
         return self.session.get(key, default)
 
     def session_set(self, key, value):
+        self.was_change = True
         self.session[key] = value
 
     def session_delete(self, key):
+        self.was_change = True
         self.session.delete(key)
