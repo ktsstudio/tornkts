@@ -1,5 +1,8 @@
 import string
-import json
+try:
+    import simplejson as json
+except:
+    import json as json
 
 from passlib.apps import django10_context as pwd_context
 from datetime import datetime

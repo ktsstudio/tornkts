@@ -5,10 +5,10 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='tornkts',
-    version='0.1.5',
+    version='0.2.0',
 
-    description='Helper for tornado',
-    long_description='Helper for tornado',
+    description='Tuned Tornado classes for more simple creating powerful API',
+    long_description='Tuned Tornado classes for more simple creating powerful API',
 
     author='KTS',
     author_email='team@ktsstudio.ru',
@@ -32,6 +32,6 @@ setup(
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
 
-    install_requires=['tornado', 'torndsession', 'passlib']
+    install_requires=['tornado', 'torndsession', 'passlib', 'simplejson']
 
 )
