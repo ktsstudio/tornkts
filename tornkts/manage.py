@@ -16,12 +16,12 @@ class Manage(object):
         print 'Available commands:\n - %s' % ('\n - '.join(commands_list))
 
     def run(self, command):
+        if command not in self.commands_list():
+            logging.error('Command %s not found' % command)
+            self.help()
         try:
             __import__('commands.%s' % command)
             return 0
-        except ImportError:
-            logging.error('Command %s not found' % command)
-            self.help()
         except Exception:
             traceback.print_exc()
 
