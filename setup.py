@@ -5,7 +5,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='tornkts',
-    version='0.2.3',
+    version='0.2.4',
 
     description='Tuned Tornado classes for more simple creating powerful API',
     long_description='Tuned Tornado classes for more simple creating powerful API',
@@ -32,6 +32,6 @@ setup(
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
 
-    install_requires=['tornado', 'torndsession', 'passlib', 'simplejson']
+    install_requires=['tornado', 'torndsession', 'passlib', 'ujson']
 
 )
