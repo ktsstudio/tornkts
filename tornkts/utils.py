@@ -1,6 +1,7 @@
 import string
+
 try:
-    import simplejson as json
+    import ujson as json
 except:
     import json as json
 
@@ -22,11 +23,7 @@ def to_int(value, default=0):
 
 
 def json_dumps(data):
-    def default(element):
-        if isinstance(element, datetime):
-            return str(element)
-
-    return json.dumps(data, default=default)
+    return json.dumps(data)
 
 
 def json_loads(data):
