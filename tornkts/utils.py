@@ -1,6 +1,6 @@
 import string
 try:
-    import simplejson as json
+    import ujson as json
 except:
     import json as json
 
