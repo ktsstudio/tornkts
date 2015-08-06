@@ -123,6 +123,8 @@ class ArgumentsMixin(object):
         arguments = self.get_argument(name, **self._clear_kwargs(kwargs))
         try:
             if arguments != kwargs.get('default'):
+                if arguments == '':
+                    return []
                 arguments = [int(x) for x in arguments.split(',')]
             else:
                 return arguments
