@@ -1,13 +1,22 @@
 import string
+import os
+import errno
+from passlib.apps import django10_context as pwd_context
+from datetime import datetime
 
 try:
     import ujson as json
 except:
     import json as json
 
-from passlib.apps import django10_context as pwd_context
-from datetime import datetime
-
+def mkdir(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 
 def to_int(value, default=0):
     if type(value) == list:
