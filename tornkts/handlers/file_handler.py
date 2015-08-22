@@ -39,6 +39,14 @@ def save_file(file_request, file_save_path):
 
 
 class FileHandler(BaseHandler):
+
+    @property
+    def allowed_extensions(self):
+        return []
+
+    def check_request(self):
+        return True
+
     @property
     def post_methods(self):
         return {
@@ -46,12 +54,18 @@ class FileHandler(BaseHandler):
         }
 
     def upload(self):
+        self.check_request()
+
         fields = self.request.files.keys()
         if len(fields) != 1:
             raise ServerError('bad_request')
 
         field_name = fields[0]
         file_request = self.request.files[field_name][0]
+
+        file_ext = FileHelper.file_ext(file_request['filename'])
+        if len(self.allowed_extensions) > 0 and file_ext not in self.allowed_extensions:
+            raise ServerError('bad_request', data="incorrect_file_extension")
 
         save_path_tree, file_name = save_file(file_request, self.application.settings['file_save_path'])
 
