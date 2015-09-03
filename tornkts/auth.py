@@ -1,9 +1,10 @@
 import functools
+from tornado import gen
 
 from tornkts.base.server_response import ServerError
 
 
-def need_role(role=[]):
+def need_role(role=[], async=False):
     def generator(method):
         @functools.wraps(method)
         def wrapper(self, *args, **kwargs):
@@ -13,12 +14,25 @@ def need_role(role=[]):
                 raise ServerError('role_forbidden')
             return method(self, *args, **kwargs)
 
-        return wrapper
+        @functools.wraps(method)
+        @gen.coroutine
+        def async_wrapper(self, *args, **kwargs):
+            current_user = yield self.current_user
+            if not current_user:
+                raise ServerError('not_auth')
+            elif current_user.role not in role:
+                raise ServerError('role_forbidden')
+            yield method(self, *args, **kwargs)
+
+        if async:
+            return async_wrapper
+        else:
+            return wrapper
 
     return generator
 
 
-def need_not_role(role=[], error_code='ok'):
+def need_not_role(role=[], error_code='ok', async=False):
     def generator(method):
         @functools.wraps(method)
         def wrapper(self, *args, **kwargs):
@@ -26,7 +40,18 @@ def need_not_role(role=[], error_code='ok'):
                 raise ServerError(error_code)
             return method(self, *args, **kwargs)
 
-        return wrapper
+        @functools.wraps(method)
+        @gen.coroutine
+        def async_wrapper(self, *args, **kwargs):
+            current_user = yield self.current_user
+            if current_user and current_user.role in role:
+                raise ServerError(error_code)
+            yield method(self, *args, **kwargs)
+
+        if async:
+            return async_wrapper
+        else:
+            return wrapper
 
     return generator
 
