@@ -6,8 +6,8 @@ here = path.abspath(path.dirname(__file__))
 setup(
     name='tornkts',
     version='0.3.0',
-    description='Tuned Tornado classes for more simple creating powerful API',
-    long_description='Tuned Tornado classes for more simple creating powerful API',
+    description='Tuned Tornado classes for simpler creation of powerful APIs',
+    long_description='Tuned Tornado classes for simpler creation of powerful APIs',
 
     author='KTS',
     author_email='team@ktsstudio.ru',
