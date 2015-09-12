@@ -53,6 +53,25 @@ class FileHandler(BaseHandler):
             'upload': self.upload
         }
 
+    def make_result(self, id, url):
+        self.save_to_db(id, url)
+        self.send_success_response(data={
+            "id": id,
+            'url': url
+        })
+
+    def save_to_db(self, id, url):
+        pass
+
+    @property
+    def file_save_path(self):
+        return self.application.settings['file_save_path']
+
+    @property
+    def statis_server_address(self):
+        return self.application.settings["static_server_address"]
+
+
     def upload(self):
         self.check_request()
 
@@ -67,9 +86,9 @@ class FileHandler(BaseHandler):
         if len(self.allowed_extensions) > 0 and file_ext not in self.allowed_extensions:
             raise ServerError('bad_request', data="incorrect_file_extension")
 
-        save_path_tree, file_name = save_file(file_request, self.application.settings['file_save_path'])
+        save_path_tree, file_name = save_file(file_request, self.file_save_path)
 
-        self.send_success_response(data={
-            'id': '%s/%s' % (save_path_tree, file_name),
-            'url': '%s/%s/%s' % (self.application.settings["static_server_address"], save_path_tree, file_name)
-        })
+        self.make_result(
+            '%s/%s' % (save_path_tree, file_name),
+            '%s/%s/%s' % (self.statis_server_address, save_path_tree, file_name)
+        )
