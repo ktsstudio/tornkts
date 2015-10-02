@@ -98,8 +98,9 @@ class ObjectHandler(BaseHandler):
         for field in self.put_fields:
             kwargs = self.put_fields[field]
             field_type = kwargs.get('field_type', None)
+            field_name = kwargs.get('field_name', field)
             argument_method = self.__method_by_field_type(field_type)
-            field_data = argument_method(**kwargs)
+            field_data = argument_method(field_name, **kwargs)
 
             setattr(updated_object, field, field_data)
 
