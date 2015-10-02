@@ -5,7 +5,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='tornkts',
-    version='0.3.1',
+    version='0.3.2',
     description='Tuned Tornado classes for simpler creation of powerful APIs',
     long_description='Tuned Tornado classes for simpler creation of powerful APIs',
 
