@@ -2,15 +2,18 @@ from setuptools import setup, find_packages
 from os import path
 
 here = path.abspath(path.dirname(__file__))
+version='0.3.3'
 
 setup(
     name='tornkts',
-    version='0.3.2',
+    version=version,
     description='Tuned Tornado classes for simpler creation of powerful APIs',
     long_description='Tuned Tornado classes for simpler creation of powerful APIs',
 
     author='KTS',
-    author_email='team@ktsstudio.ru',
+    author_email='tornkts@ktsstudio.ru',
+    url='https://github.com/KTSStudio/tornkts',
+    download_url='https://github.com/KTSStudio/tornkts/tarball/v' + version,
 
     license='MIT',
 
