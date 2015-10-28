@@ -14,6 +14,7 @@ class ServerError(Exception):
     FIELD_SKIPPED = 'skipped'
     FIELD_NOT_ALLOWED = 'not_allowed'
     FIELD_REPEAT = 'repeat'
+    FIELD_INVALID = 'invalid'
 
     def __init__(self, status_alias, description=None, data=None, field=None, field_problem=None):
         self.status = get_response_status(status_alias)
