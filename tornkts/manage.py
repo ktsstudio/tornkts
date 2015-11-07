@@ -3,7 +3,9 @@ import logging
 import sys
 import traceback
 import pkgutil
+import os
 
+os.environ['TORNKTS_ENV'] = 'manage'
 
 class Manage(object):
     commands = ['help']
