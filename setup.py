@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from os import path
 
 here = path.abspath(path.dirname(__file__))
-version='0.3.4'
+version='0.3.5'
 
 setup(
     name='tornkts',
@@ -31,9 +31,6 @@ setup(
     ],
 
     keywords='tornkts setuptools development',
-
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
-
     install_requires=['tornado', 'torndsession', 'passlib', 'ujson']
-
 )
