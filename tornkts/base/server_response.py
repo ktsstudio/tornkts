@@ -60,6 +60,8 @@ STATUSES = [
     ServerResponseStatus('forbidden', 'Forbidden', 403),
     ServerResponseStatus('not_found', 'Not found', 404),
     ServerResponseStatus('not_implemented', 'Not implemented', 405),
+    
+    ServerResponseStatus('mix_fields_filter', 'Cannot have a mix of inclusion and exclusion', 500)
 ]
 
 UNKNOWN_STATUS = ServerResponseStatus('unknown_error', 'Unknown error', 500)
