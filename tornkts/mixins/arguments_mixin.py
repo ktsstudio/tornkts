@@ -31,7 +31,10 @@ class ArgumentsMixin(object):
         argument = self.get_argument(name, **self._clear_kwargs(kwargs))
         try:
             if argument != kwargs.get('default'):
-                argument = int(argument)
+                if argument == '' and 'default' in kwargs:
+                    argument = kwargs.get('default')
+                else:
+                    argument = int(argument)
             else:
                 return argument
         except Exception:
