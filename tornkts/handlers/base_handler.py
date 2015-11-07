@@ -1,15 +1,11 @@
 # coding=utf-8
-
-
 import sys
 from tornado import httputil
 from tornado.log import gen_log
 from tornado.web import HTTPError, Finish, app_log, MissingArgumentError
-
 import tornkts.utils as utils
 from tornkts.mixins.arguments_mixin import ArgumentsMixin
-from tornkts.base.server_response import get_response_status, get_response_status_by_code, ServerResponseStatus, \
-    ServerError
+from tornkts.base.server_response import get_response_status, ServerResponseStatus, ServerError, UNKNOWN_STATUS
 from session_handler import SessionHandler
 
 
@@ -134,8 +130,10 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
 
     def write_error(self, status=500, **kwargs):
         if not isinstance(status, ServerResponseStatus):
-            status = get_response_status_by_code(status)
-        self.set_status(status.http_code)
+            self.set_status(status)
+            status = UNKNOWN_STATUS
+        else:
+            self.set_status(status.http_code)
 
         exception = kwargs['exc_info'][1]
         data = None
