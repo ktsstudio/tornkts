@@ -41,3 +41,21 @@ class AuthMixin(object):
         self.session_set('is_auth', True)
 
         self.send_success_response()
+
+    def get_current_user(self):
+        if self.session_get('is_auth', False):
+            user_id = self.session_get('user_id', '*')
+
+            user = None
+            for auth_cls in self.auth_classes:
+                user = get_object_or_none(auth_cls, pk=user_id)
+                if user is not None: break
+
+            if user is None:
+                return False
+
+            return user
+        else:
+            return False
+
+
