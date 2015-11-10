@@ -63,18 +63,19 @@ class ObjectHandler(BaseHandler):
             offset = self.get_int_argument('offset', default=0)
             objects = self.queryset.skip(offset).limit(limit)
             objects = [object.to_dict() for object in objects]
-            count = self.MODEL_CLS.objects.count()
-            response = {
-                "items": objects,
-                "count": count
-            }
-
-            self.send_success_response(data=response)
+            count = self.MODEL_CLS.objects.count()  
         else:
             single_object = get_object_or_none(self.MODEL_CLS, id=id)
             if single_object is None:
-                raise ServerError('bad_request', data='no_object_{0}'.format(self.MODEL_CLS))
-            self.send_success_response(data=single_object.to_dict())
+                raise ServerError('not_found')
+            else:
+                count = 1
+                objects = [single_object]
+        response = {
+            "items": objects,
+            "count": count
+        }
+        self.send_success_response(data=response)
 
     def save_logic(self, some_object):
         """
