@@ -87,7 +87,7 @@ class ObjectHandler(BaseHandler):
     def save(self):
         id = self.get_str_argument("id", default=None)
         if id:
-            updated_object = get_object_or_none(self.MODEL_CLS)
+            updated_object = get_object_or_none(self.MODEL_CLS, id=id)
             return self.put(updated_object=updated_object)
         return self.put()
 
