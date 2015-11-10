@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from os import path
 
 here = path.abspath(path.dirname(__file__))
-version='0.5.0'
+version='0.5.1'
 
 setup(
     name='tornkts',
