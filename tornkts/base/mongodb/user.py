@@ -1,6 +1,7 @@
 from datetime import datetime
 from mongoengine import DateTimeField, EmailField, StringField
 from tornkts.base.mongodb import BaseDocument
+from tornkts.base.server_response import ServerError
 
 
 class User(BaseDocument):
@@ -25,6 +26,13 @@ class BaseAdmin(User):
     email = EmailField(max_length=255, required=True)
     password = StringField(max_length=255, required=True)
     name = StringField(max_length=255, required=False)
+    
+    @staticmethod
+    def check_repeat(admin, email):
+        if admin is None or (admin.email != email):
+            email_busy = BaseAdmin.objects(email=email).count()
+            if email_busy > 0:
+                raise ServerError('invalid_param', field='email', field_problem=ServerError.FIELD_REPEAT)
 
     @property
     def role(self):
