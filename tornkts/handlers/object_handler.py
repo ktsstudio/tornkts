@@ -2,10 +2,10 @@
 from tornkts.base.mongodb import get_object_or_none
 from tornkts.base.server_response import ServerError
 from tornkts.handlers import BaseHandler
+from tornkts.utils import PasswordHelper
 
 
 class ObjectHandler(BaseHandler):
-
     MODEL_CLS = None
 
     @property
@@ -38,8 +38,8 @@ class ObjectHandler(BaseHandler):
     @property
     def post_methods(self):
         return {
-            'save': self.save,
-            'delete': self.delete
+            'save': self.save_object,
+            'delete': self.delete_object
         }
 
     def __method_by_field_type(self, field_type):
@@ -63,14 +63,14 @@ class ObjectHandler(BaseHandler):
             offset = self.get_int_argument('offset', default=0)
             objects = self.queryset.skip(offset).limit(limit)
             objects = [object.to_dict() for object in objects]
-            count = self.MODEL_CLS.objects.count()  
+            count = self.MODEL_CLS.objects.count()
         else:
             single_object = get_object_or_none(self.MODEL_CLS, id=id)
             if single_object is None:
                 raise ServerError('not_found')
             else:
                 count = 1
-                objects = [single_object]
+                objects = [single_object.to_dict()]
         response = {
             "items": objects,
             "count": count
@@ -82,17 +82,18 @@ class ObjectHandler(BaseHandler):
         Перед сохранением в методе save вызывается этот метод
         :param some_object: сохраненный объект
         """
+        some_object.validate_model()
         some_object.save()
         self.send_success_response(data=some_object.to_dict())
 
-    def save(self):
+    def save_object(self):
         id = self.get_str_argument("id", default=None)
         if id:
             updated_object = get_object_or_none(self.MODEL_CLS, id=id)
-            return self.put(updated_object=updated_object)
-        return self.put()
+            return self.put_object(updated_object=updated_object)
+        return self.put_object()
 
-    def put(self, updated_object=None):
+    def put_object(self, updated_object=None):
         if updated_object is None:
             updated_object = self.MODEL_CLS()
 
@@ -100,8 +101,19 @@ class ObjectHandler(BaseHandler):
             kwargs = self.put_fields[field]
             field_type = kwargs.get('field_type', None)
             field_name = kwargs.get('field_name', field)
+            require_if_none = kwargs.get('require_if_none', False)
+
+            if require_if_none:
+                if updated_object is not None:
+                    kwargs.update({'default': None})
+
             argument_method = self.__method_by_field_type(field_type)
             field_data = argument_method(field_name, **kwargs)
+
+            if require_if_none and field_data is None:
+                continue
+            if kwargs.get('hash', False):
+                field_data = PasswordHelper.get_hash(field_data)
 
             setattr(updated_object, field, field_data)
 
@@ -116,9 +128,9 @@ class ObjectHandler(BaseHandler):
         some_object.delete()
         self.send_success_response()
 
-    def delete(self):
+    def delete_object(self):
         id = self.get_str_argument("id")
         single_object = get_object_or_none(self.MODEL_CLS, id=id)
         if single_object is None:
-            raise ServerError('bad_request', data='no_object_{0}'.format(self.MODEL_CLS))
+            raise ServerError('not_found')
         self.delete_logic(single_object)
