@@ -1,11 +1,10 @@
 # coding=utf-8
-from tornkts.base.mongodb import get_object_or_none
+from tornkts.base.mongodb.utils import get_object_or_none
 from tornkts.base.server_response import ServerError
-from tornkts.handlers import BaseHandler
+from tornkts.handlers.base_handler import BaseHandler
 
 
 class ObjectHandler(BaseHandler):
-
     MODEL_CLS = None
 
     @property

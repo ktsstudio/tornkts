@@ -1,5 +1,5 @@
 from tornkts.base.server_response import ServerError
-from tornkts.base.mongodb import get_object_or_none
+from tornkts.base.mongodb.utils import get_object_or_none
 from tornkts.utils import PasswordHelper
 
 

@@ -1,14 +1,15 @@
-import os
-from tornkts.base.server_response import ServerError
-from tornkts.handlers import BaseHandler
-from tornkts.utils import FileHelper
-from hashlib import md5
 from datetime import datetime
+
+import os
+from hashlib import md5
+from tornkts.base.server_response import ServerError
+from tornkts.handlers.base_handler import BaseHandler
+from tornkts.utils import FileHelper
 
 
 def get_file_pathes(file_request, file_save_path):
     file_body = file_request['body']
-    file_body_hash = md5(md5(file_body).hexdigest() + md5(datetime.now().isoformat()).hexdigest()).hexdigest()
+    file_body_hash = md5(file_body).hexdigest()
 
     file_ext = FileHelper.file_ext(file_request['filename'])
     if file_ext != '':
@@ -39,7 +40,6 @@ def save_file(file_request, file_save_path):
 
 
 class FileHandler(BaseHandler):
-
     @property
     def allowed_extensions(self):
         return []
@@ -53,12 +53,10 @@ class FileHandler(BaseHandler):
             'upload': self.upload
         }
 
-    def make_result(self, id, url):
-        self.save_to_db(id, url)
-        self.send_success_response(data={
-            "id": id,
-            'url': url
-        })
+    def make_result(self, files):
+        for file in files:
+            self.save_to_db(file['id'], file['path'])
+        self.send_success_response(data=files)
 
     def save_to_db(self, id, url):
         pass
@@ -68,27 +66,26 @@ class FileHandler(BaseHandler):
         return self.application.settings['file_save_path']
 
     @property
-    def statis_server_address(self):
+    def static_server_address(self):
         return self.application.settings["static_server_address"]
-
 
     def upload(self):
         self.check_request()
 
-        fields = self.request.files.keys()
-        if len(fields) != 1:
+        request_files = self.request.files['files']
+        if len(request_files) < 1:
             raise ServerError('bad_request')
 
-        field_name = fields[0]
-        file_request = self.request.files[field_name][0]
+        result = []
+        for file_request in request_files:
+            file_ext = FileHelper.file_ext(file_request['filename'])
+            if len(self.allowed_extensions) > 0 and file_ext not in self.allowed_extensions:
+                raise ServerError('bad_request', data="incorrect_file_extension")
 
-        file_ext = FileHelper.file_ext(file_request['filename'])
-        if len(self.allowed_extensions) > 0 and file_ext not in self.allowed_extensions:
-            raise ServerError('bad_request', data="incorrect_file_extension")
+            save_path_tree, file_name = save_file(file_request, self.file_save_path)
+            result.append({
+                "id": '%s/%s' % (save_path_tree, file_name),
+                "path": '%s/%s/%s' % (self.static_server_address, save_path_tree, file_name)
+            })
 
-        save_path_tree, file_name = save_file(file_request, self.file_save_path)
-
-        self.make_result(
-            '%s/%s' % (save_path_tree, file_name),
-            '%s/%s/%s' % (self.statis_server_address, save_path_tree, file_name)
-        )
+        self.make_result(result)

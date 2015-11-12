@@ -1,8 +1,8 @@
-from mongoengine import document
+from mongoengine import Document
 from tornkts.mixins.to_dict_mixin import ToDictMixin
 
 
-class BaseDocument(ToDictMixin, document.Document):
+class BaseDocument(ToDictMixin, Document):
     meta = {
         'allow_inheritance': True,
         'abstract': True
@@ -10,4 +10,4 @@ class BaseDocument(ToDictMixin, document.Document):
 
     def get_id(self):
         return str(self.pk)
-        
+
