@@ -1,12 +1,13 @@
 # coding=utf-8
 import sys
+
+import tornkts.utils as utils
 from tornado import httputil
 from tornado.log import gen_log
 from tornado.web import HTTPError, Finish, app_log, MissingArgumentError
-import tornkts.utils as utils
-from tornkts.mixins.arguments_mixin import ArgumentsMixin
 from tornkts.base.server_response import get_response_status, ServerResponseStatus, ServerError, UNKNOWN_STATUS
-from session_handler import SessionHandler
+from tornkts.mixins.arguments_mixin import ArgumentsMixin
+from .session_handler import SessionHandler
 
 
 class BaseHandler(SessionHandler, ArgumentsMixin):
@@ -173,6 +174,9 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
             'status': response_status.alias,
             'data': data
         }
+
+        if message is not None:
+            response['message'] = message
 
         if field is not None:
             response['field'] = field

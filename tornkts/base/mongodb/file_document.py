@@ -1,5 +1,5 @@
 from mongoengine import StringField
-from tornkts.base.mongodb import BaseDocument
+from tornkts.base.mongodb.base_document import BaseDocument
 
 
 class FileDocument(BaseDocument):

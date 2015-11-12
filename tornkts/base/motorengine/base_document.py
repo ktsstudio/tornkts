@@ -1,8 +1,9 @@
-from motorengine import document
+from motorengine import Document
 from tornkts.mixins.to_dict_mixin import ToDictMixin
 from tornkts.mixins.validate_mixin import ValidateMixin
 
-class BaseDocument(ToDictMixin, ValidateMixin, document.Document):
+
+class BaseDocument(ToDictMixin, ValidateMixin, Document):
     meta = {
         'allow_inheritance': True,
         'abstract': True

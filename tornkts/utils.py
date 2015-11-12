@@ -1,13 +1,14 @@
-import string
-import os
 import errno
-from passlib.apps import django10_context as pwd_context
 from datetime import datetime
+
+import os
+from passlib.apps import django10_context as pwd_context
 
 try:
     import ujson as json
 except:
     import json as json
+
 
 def mkdir(path):
     try:
@@ -17,6 +18,7 @@ def mkdir(path):
             pass
         else:
             raise
+
 
 def to_int(value, default=0):
     if type(value) == list:
@@ -69,5 +71,14 @@ class FileHelper(object):
     def file_ext(filename):
         split = filename.rsplit('.', 1)
         if len(split) > 1:
-            return string.lower(split[1])
-        return ''
+            extension = str(split[1])
+            return extension.lower()
+        return ""
+
+
+class InvalidArgumentException(Exception):
+    message = ''
+
+    def __init__(self, message):
+        super().__init__()
+        self.message = message

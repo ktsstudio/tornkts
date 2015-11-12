@@ -1,11 +1,14 @@
-__author__ = 'grigory51'
 import logging
+import pkgutil
 import sys
 import traceback
-import pkgutil
+
 import os
 
+__author__ = 'grigory51'
+
 os.environ['TORNKTS_ENV'] = 'manage'
+
 
 class Manage(object):
     commands = ['help']
@@ -15,7 +18,7 @@ class Manage(object):
 
     def help(self):
         commands_list = self.commands_list()
-        print 'Available commands:\n - %s' % ('\n - '.join(commands_list))
+        print('Available commands:\n - %s' % ('\n - '.join(commands_list)))
 
     def run(self, command):
         if command not in self.commands_list():
