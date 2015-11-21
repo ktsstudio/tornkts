@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from os import path
 
 here = path.abspath(path.dirname(__file__))
-version='0.5.1'
+version='0.6.1'
 
 setup(
     name='tornkts',
@@ -28,9 +28,10 @@ setup(
 
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
     ],
 
     keywords='tornkts setuptools development',
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
-    install_requires=['tornado', 'torndsession', 'passlib', 'ujson']
+    install_requires=['tornado', 'torndsession', 'passlib', 'ujson', 'six']
 )
