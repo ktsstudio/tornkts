@@ -1,7 +1,7 @@
 # coding=utf-8
 import json
 from datetime import datetime
-
+import six
 import re
 from tornkts.base.server_response import ServerError
 
@@ -156,7 +156,10 @@ class ArgumentsMixin(object):
         argument = self.get_argument(name, **self._clear_kwargs(kwargs))
         try:
             if argument != kwargs.get('default'):
-                argument = str(argument)
+                if six.PY2:
+                    argument = unicode(argument)
+                else:
+                    argument = str(argument)
             else:
                 return argument
         except Exception:
