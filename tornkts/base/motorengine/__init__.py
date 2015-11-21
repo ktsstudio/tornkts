@@ -1,2 +1,0 @@
-from base_document import BaseDocument
-from email_queue import EmailQueue

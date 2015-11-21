@@ -1,10 +1,12 @@
 import functools
 from tornado import gen
-
 from tornkts.base.server_response import ServerError
 
 
-def need_role(role=[], async=False):
+def need_role(role=None, async=False):
+    if not role:
+        role = []
+
     def generator(method):
         @functools.wraps(method)
         def wrapper(self, *args, **kwargs):
@@ -32,7 +34,10 @@ def need_role(role=[], async=False):
     return generator
 
 
-def need_not_role(role=[], error_code='ok', async=False):
+def need_not_role(role=None, error_code='ok', async=False):
+    if not role:
+        role = []
+
     def generator(method):
         @functools.wraps(method)
         def wrapper(self, *args, **kwargs):
@@ -56,7 +61,10 @@ def need_not_role(role=[], error_code='ok', async=False):
     return generator
 
 
-def need_is_approved(role=[]):
+def need_is_approved(role=None):
+    if not role:
+        role = []
+
     def generator(method):
         @functools.wraps(method)
         def wrapper(self, *args, **kwargs):
@@ -71,7 +79,10 @@ def need_is_approved(role=[]):
     return generator
 
 
-def need_is_active(role=[]):
+def need_is_active(role=None):
+    if not role:
+        role = []
+
     def generator(method):
         @functools.wraps(method)
         def wrapper(self, *args, **kwargs):

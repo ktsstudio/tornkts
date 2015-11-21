@@ -1,8 +1,8 @@
 # coding=utf-8
 import json
-import re
 from datetime import datetime
 
+import re
 from tornkts.base.server_response import ServerError
 
 
@@ -156,7 +156,7 @@ class ArgumentsMixin(object):
         argument = self.get_argument(name, **self._clear_kwargs(kwargs))
         try:
             if argument != kwargs.get('default'):
-                argument = unicode(argument)
+                argument = str(argument)
             else:
                 return argument
         except Exception:

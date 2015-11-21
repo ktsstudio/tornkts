@@ -1,12 +1,13 @@
 # coding=utf-8
 import sys
+
+import tornkts.utils as utils
 from tornado import httputil
 from tornado.log import gen_log
 from tornado.web import HTTPError, Finish, app_log, MissingArgumentError
-import tornkts.utils as utils
-from tornkts.mixins.arguments_mixin import ArgumentsMixin
 from tornkts.base.server_response import get_response_status, ServerResponseStatus, ServerError, UNKNOWN_STATUS
-from session_handler import SessionHandler
+from tornkts.mixins.arguments_mixin import ArgumentsMixin
+from .session_handler import SessionHandler
 
 
 class BaseHandler(SessionHandler, ArgumentsMixin):
@@ -174,6 +175,9 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
             'data': data
         }
 
+        if message is not None:
+            response['message'] = message
+
         if field is not None:
             response['field'] = field
         if field_problem is not None:
@@ -188,10 +192,11 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
     def write_raw(self, chunk):
         self.write(chunk, plain=True)
 
-    def write(self, chunk, plain=False):
-        if plain:
-            self.set_content_type_plain()
-        else:
-            self.set_content_type_json()
+    def write(self, chunk, plain=False, nocontenttype=False):
+        if not nocontenttype:
+            if plain:
+                self.set_content_type_plain()
+            else:
+                self.set_content_type_json()
         self.set_header('Cache-control', 'no-cache,no-store,must-revalidate')
         super(BaseHandler, self).write(chunk)

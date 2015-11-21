@@ -1,8 +1,10 @@
+import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import smtplib
+
 from motorengine import StringField, BooleanField
 from tornkts.base.motorengine.base_document import BaseDocument
+
 
 class EmailQueue(BaseDocument):
     message = StringField(required=True)
@@ -43,12 +45,12 @@ class EmailQueue(BaseDocument):
         password = settings.get("password")
 
         smtpserver = smtplib.SMTP(host, port)
-        
+
         smtpserver.ehlo()
         if settings.get('use_tls'):
             smtpserver.starttls()
         if password:
             smtpserver.login(username, password)
-            
+
         smtpserver.sendmail(username, self.to, self.message)
         smtpserver.close()

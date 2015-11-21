@@ -1,6 +1,6 @@
-from torndsession.filesession import FileSession
 import torndsession.session
 from tornado.web import RequestHandler
+from torndsession.filesession import FileSession
 
 
 class SessionManager(torndsession.session.SessionManager):
