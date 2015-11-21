@@ -192,10 +192,11 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
     def write_raw(self, chunk):
         self.write(chunk, plain=True)
 
-    def write(self, chunk, plain=False):
-        if plain:
-            self.set_content_type_plain()
-        else:
-            self.set_content_type_json()
+    def write(self, chunk, plain=False, nocontenttype=False):
+        if not nocontenttype:
+            if plain:
+                self.set_content_type_plain()
+            else:
+                self.set_content_type_json()
         self.set_header('Cache-control', 'no-cache,no-store,must-revalidate')
         super(BaseHandler, self).write(chunk)
