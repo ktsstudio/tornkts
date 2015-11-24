@@ -202,7 +202,12 @@ class ArgumentsMixin(object):
                                       field=name,
                                       field_problem=ServerError.FIELD_NOT_ALLOWED)
 
+        if kwargs.get('none_if_empty', False) is True:
+            if len(argument) == 0:
+                argument = None
+
         check()
+
         if kwargs.get('clear_regexp', None) is not None:
             clear_regexp = kwargs.get('clear_regexp')
             argument = re.sub(clear_regexp, '', argument)
