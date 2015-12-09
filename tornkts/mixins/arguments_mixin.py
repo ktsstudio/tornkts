@@ -15,6 +15,8 @@ class ArgumentsMixin(object):
 
     MIN_DATE = datetime.strptime('1900-01-01', '%Y-%m-%d')
 
+    STR_TYPE = unicode if six.PY2 else str
+
     def _clear_kwargs(self, kwargs):
         return dict((k, v) for k, v in kwargs.items() if k in ['default', 'strip'])
 
@@ -156,10 +158,7 @@ class ArgumentsMixin(object):
         argument = self.get_argument(name, **self._clear_kwargs(kwargs))
         try:
             if argument != kwargs.get('default'):
-                if six.PY2:
-                    argument = unicode(argument)
-                else:
-                    argument = str(argument)
+                argument = self.STR_TYPE(argument)
             else:
                 return argument
         except Exception:
@@ -224,7 +223,7 @@ class ArgumentsMixin(object):
         arguments = self.get_argument(name, **self._clear_kwargs(kwargs))
         try:
             if arguments != kwargs.get('default'):
-                arguments = [str(x) for x in arguments.split(',')]
+                arguments = [self.STR_TYPE(x) for x in arguments.split(',')]
             else:
                 return arguments
         except Exception:
