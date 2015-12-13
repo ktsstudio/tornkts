@@ -11,6 +11,7 @@ class VerificationHandler(BaseHandler):
         ServerResponseStatus('sms_send_fail', 'fail to send some sms', 406),
         ServerResponseStatus('verification_not_found', 'no requested verification', 400),
         ServerResponseStatus('invalid_verification_key', 'incorrect verification key', 403),
+        ServerResponseStatus('not_verified', 'not verified yet', 403),
     ]
 
     def keygen(self):
@@ -20,6 +21,7 @@ class VerificationHandler(BaseHandler):
     def send(self, verification):
         """
         Метод отправки пользователю ключа
+        Нужно вернуть true/false. Удалось ли отправить код
         """
         raise NotImplementedError
 
@@ -33,7 +35,7 @@ class VerificationHandler(BaseHandler):
     @property
     def post_methods(self):
         return {
-            'verify': self.__verify
+            'verify': self._verify
         }
 
     @property
@@ -46,11 +48,12 @@ class VerificationHandler(BaseHandler):
         verified_entity = self.get_verified_argument()
 
         verification = get_object_or_none(Verification, verified_entity=verified_entity)
+
         if verification is None:
             verification = Verification.generate(verified_entity, self.keygen)
-            verification.save()
 
-        self.send(verification)
+        if self.send(verification):
+            verification.save()
 
         self.send_success_response()
 
@@ -69,9 +72,10 @@ class VerificationHandler(BaseHandler):
         if not verification.verify(verification_key):
             raise ServerError('invalid_verification_key')
 
-        verification.delete()
+        verification.verified = True
+        verification.save()
 
-    def __verify(self):
+    def _verify(self):
         verified_entity = self.get_verified_argument()
         verification_key = self.get_str_argument("verification_key")
 
