@@ -9,6 +9,7 @@ from tornkts.base.mongodb.base_document import BaseDocument
 class EmailQueue(BaseDocument):
     message = StringField(required=True)
     to = StringField(required=True)
+    from_email = StringField(required=False)
     sended = BooleanField(default=False)
 
     @staticmethod
@@ -27,7 +28,7 @@ class EmailQueue(BaseDocument):
         message.attach(msg)
         message = message.as_string()
 
-        EmailQueue(message=message, to=to).save()
+        EmailQueue(message=message, from_email=username, to=to).save()
 
     @staticmethod
     def send(application):
@@ -51,6 +52,9 @@ class EmailQueue(BaseDocument):
             smtpserver.starttls()
         if password:
             smtpserver.login(username, password)
+
+        if self.from_email is not None and isinstance(self.from_email, (str, unicode)):
+            username = self.from_email
 
         smtpserver.sendmail(username, self.to, self.message)
         smtpserver.close()
