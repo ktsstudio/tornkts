@@ -13,22 +13,24 @@ class EmailQueue(BaseDocument):
     sended = BooleanField(default=False)
 
     @staticmethod
-    def add(username, to, subject, msg, type="text"):
+    def add(username, to, subject, msg, msg_type="text"):
+        if type(to) != list:
+            to = [to, ]
+        for email in to:
+            message = MIMEMultipart('alternative')
+            message['From'] = username
+            message['To'] = email
+            message['Subject'] = subject
 
-        message = MIMEMultipart('alternative')
-        message['From'] = username
-        message['To'] = to
-        message['Subject'] = subject
+            if msg_type == "text":
+                msg = MIMEText(msg, 'plain', 'utf-8')
+            elif msg_type == "html":
+                msg = MIMEText(msg, 'html', 'utf-8')
 
-        if type == "text":
-            msg = MIMEText(msg, 'plain', 'utf-8')
-        elif type == "html":
-            msg = MIMEText(msg, 'html', 'utf-8')
+            message.attach(msg)
+            message = message.as_string()
 
-        message.attach(msg)
-        message = message.as_string()
-
-        EmailQueue(message=message, from_email=username, to=to).save()
+            EmailQueue(message=message, from_email=username, to=email).save()
 
     @staticmethod
     def send(application):
