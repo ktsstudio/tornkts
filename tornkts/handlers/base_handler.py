@@ -29,6 +29,14 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
         return self.get_float_argument('v', default=1)
 
     @property
+    def default_get_method(self):
+        return None
+        
+    @property
+    def default_post_method(self):
+        return None
+
+    @property
     def get_methods(self):
         return {}
 
@@ -38,8 +46,12 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
 
     def get(self, *args, **kwargs):
         action_title = args[0] if len(args) > 0 else ''
+        
+        if not (action_title in self.get_methods.keys()):
+            action_title = self.default_get_method    
         if action_title in self.get_methods.keys():
             return self.get_methods.get(action_title)()
+            
         if action_title in self.post_methods:
             raise ServerError('not_implemented')
         else:
@@ -47,8 +59,12 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
 
     def post(self, *args, **kwargs):
         action_title = args[0] if len(args) > 0 else ''
+        
+        if not (action_title in self.post_methods.keys()):
+            action_title = self.default_post_method
         if action_title in self.post_methods.keys():
             return self.post_methods.get(action_title)()
+        
         if action_title in self.get_methods:
             raise ServerError('not_implemented')
         else:
