@@ -16,6 +16,7 @@ class ArgumentsMixin(object):
     MIN_DATE = datetime.strptime('1900-01-01', '%Y-%m-%d')
 
     STR_TYPE = unicode if six.PY2 else str
+    INT_MAX = 18446744073709551616 if six.PY3 else 4294967295
 
     def _clear_kwargs(self, kwargs):
         return dict((k, v) for k, v in kwargs.items() if k in ['default', 'strip'])
@@ -51,8 +52,8 @@ class ArgumentsMixin(object):
                                   description='Argument %s must be greater than %s' % (name, min_value),
                                   field=name,
                                   field_problem=ServerError.FIELD_LESS_MIN)
-        if kwargs.get('max', 4294967295) is not None:
-            max_value = int(kwargs.get('max', 4294967295))
+        if kwargs.get('max', None) is not None:
+            max_value = int(kwargs.get('max', self.INT_MAX))
             if argument > max_value:
                 raise ServerError('invalid_param',
                                   description='Argument %s must be less than than %s' % (name, max_value),
@@ -144,8 +145,8 @@ class ArgumentsMixin(object):
                                       description='Argument %s must be greater than %s' % (name, min_value),
                                       field=name,
                                       field_problem=ServerError.FIELD_LESS_MIN)
-        if kwargs.get('max', 4294967295) is not None:
-            max_value = int(kwargs.get('max', 4294967295))
+        if kwargs.get('max', None) is not None:
+            max_value = int(kwargs.get('max', self.INT_MAX))
             for argument in arguments:
                 if argument > max_value:
                     raise ServerError('invalid_param',
