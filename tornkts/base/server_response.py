@@ -50,7 +50,7 @@ class ServerError(Exception):
         self.status = status
         self.description = self.status.description
         if isinstance(description, str):
-            self.description += '. ' + description
+            self.description = description
 
         self.data = data
         self.field = field
