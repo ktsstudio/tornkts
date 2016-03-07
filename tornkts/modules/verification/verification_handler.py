@@ -6,13 +6,11 @@ from tornkts.modules.verification import Verification
 
 
 class VerificationHandler(BaseHandler):
-
-    STATUSES = [
-        ServerResponseStatus('sms_send_fail', 'fail to send some sms', 406),
-        ServerResponseStatus('verification_not_found', 'no requested verification', 400),
-        ServerResponseStatus('invalid_verification_key', 'incorrect verification key', 403),
-        ServerResponseStatus('not_verified', 'not verified yet', 403),
-    ]
+    STATUS_SMS_SEND_FAIL = ServerResponseStatus('sms_send_fail', 'fail to send some sms', 406),
+    STATUS_VERIFICATION_NOT_FOUND = ServerResponseStatus('verification_not_found', 'no requested verification', 400),
+    STATUS_INVALID_VERIFICATION_KEY = ServerResponseStatus('invalid_verification_key', 'incorrect verification key',
+                                                           403),
+    STATUS_NOT_VERIFIED = ServerResponseStatus('not_verified', 'not verified yet', 403),
 
     def keygen(self):
         import random
@@ -68,9 +66,9 @@ class VerificationHandler(BaseHandler):
         verification = get_object_or_none(Verification, verified_entity=verified_entity)
 
         if verification is None:
-            raise ServerError('verification_not_found')
+            raise ServerError(VerificationHandler.STATUS_VERIFICATION_NOT_FOUND)
         if not verification.verify(verification_key):
-            raise ServerError('invalid_verification_key')
+            raise ServerError(VerificationHandler.STATUS_INVALID_VERIFICATION_KEY)
 
         verification.verified = True
         verification.save()

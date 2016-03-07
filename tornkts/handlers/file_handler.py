@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import os
 from hashlib import md5
 from tornkts.base.server_response import ServerError
@@ -74,13 +72,13 @@ class FileHandler(BaseHandler):
 
         request_files = self.request.files['files']
         if len(request_files) < 1:
-            raise ServerError('bad_request')
+            raise ServerError(ServerError.BAD_REQUEST)
 
         result = []
         for file_request in request_files:
             file_ext = FileHelper.file_ext(file_request['filename'])
             if len(self.allowed_extensions) > 0 and file_ext not in self.allowed_extensions:
-                raise ServerError('bad_request', data="incorrect_file_extension")
+                raise ServerError(ServerError.BAD_REQUEST, data="incorrect_file_extension")
 
             save_path_tree, file_name = save_file(file_request, self.file_save_path)
             result.append({

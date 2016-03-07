@@ -67,7 +67,7 @@ class ObjectHandler(BaseHandler):
         else:
             single_object = get_object_or_none(self.MODEL_CLS, id=id)
             if single_object is None:
-                raise ServerError('not_found')
+                raise ServerError(ServerError.NOT_FOUND)
             else:
                 count = 1
                 objects = [single_object.to_dict()]
@@ -132,5 +132,5 @@ class ObjectHandler(BaseHandler):
         id = self.get_str_argument("id")
         single_object = get_object_or_none(self.MODEL_CLS, id=id)
         if single_object is None:
-            raise ServerError('not_found')
+            raise ServerError(ServerError.NOT_FOUND)
         self.delete_logic(single_object)

@@ -5,7 +5,7 @@ import tornkts.utils as utils
 from tornado import httputil
 from tornado.log import gen_log
 from tornado.web import HTTPError, Finish, app_log, MissingArgumentError
-from tornkts.base.server_response import get_response_status, ServerResponseStatus, ServerError, UNKNOWN_STATUS
+from tornkts.base.server_response import ServerResponseStatus, ServerError
 from tornkts.mixins.arguments_mixin import ArgumentsMixin
 from .session_handler import SessionHandler
 
@@ -18,7 +18,7 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
         try:
             value = super(BaseHandler, self).get_argument(name, default, strip)
         except MissingArgumentError:
-            raise ServerError('bad_request', field=name, field_problem=ServerError.FIELD_SKIPPED)
+            raise ServerError(ServerError.BAD_REQUEST, field=name, field_problem=ServerError.FIELD_SKIPPED)
         return value
 
     def data_received(self, chunk):
@@ -31,7 +31,7 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
     @property
     def default_get_method(self):
         return None
-        
+
     @property
     def default_post_method(self):
         return None
@@ -46,44 +46,44 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
 
     def get(self, *args, **kwargs):
         action_title = args[0] if len(args) > 0 else ''
-        
+
         if not (action_title in self.get_methods.keys()):
-            action_title = self.default_get_method    
+            action_title = self.default_get_method
         if action_title in self.get_methods.keys():
             return self.get_methods.get(action_title)()
-            
+
         if action_title in self.post_methods:
-            raise ServerError('not_implemented')
+            raise ServerError(ServerError.NOT_IMPLEMENTED)
         else:
-            raise ServerError('not_found')
+            raise ServerError(ServerError.NOT_FOUND)
 
     def post(self, *args, **kwargs):
         action_title = args[0] if len(args) > 0 else ''
-        
+
         if not (action_title in self.post_methods.keys()):
             action_title = self.default_post_method
         if action_title in self.post_methods.keys():
             return self.post_methods.get(action_title)()
-        
+
         if action_title in self.get_methods:
-            raise ServerError('not_implemented')
+            raise ServerError(ServerError.NOT_IMPLEMENTED)
         else:
-            raise ServerError('not_found')
+            raise ServerError(ServerError.NOT_FOUND)
 
     def head(self, *args, **kwargs):
-        raise ServerError('not_implemented')
+        raise ServerError(ServerError.NOT_IMPLEMENTED)
 
     def delete(self, *args, **kwargs):
-        raise ServerError('not_implemented')
+        raise ServerError(ServerError.NOT_IMPLEMENTED)
 
     def patch(self, *args, **kwargs):
-        raise ServerError('not_implemented')
+        raise ServerError(ServerError.NOT_IMPLEMENTED)
 
     def put(self, *args, **kwargs):
-        raise ServerError('not_implemented')
+        raise ServerError(ServerError.NOT_IMPLEMENTED)
 
     def options(self, *args, **kwargs):
-        raise ServerError('not_implemented')
+        raise ServerError(ServerError.NOT_IMPLEMENTED)
 
     @property
     def current_user_id(self):
@@ -110,15 +110,18 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
         if isinstance(e, HTTPError):
             if e.status_code not in httputil.responses and not e.reason:
                 gen_log.error("Bad HTTP status code: %d", e.status_code)
-                self.send_error(500, exc_info=sys.exc_info())
+                self.send_error(ServerError.INTERNAL_SERVER_ERROR, exc_info=sys.exc_info())
             else:
-                self.send_error(e.status_code, exc_info=sys.exc_info())
+                self.send_error(ServerResponseStatus('http_error', e.reason, e.status_code), exc_info=sys.exc_info())
         elif isinstance(e, ServerError):
             self.send_error(e.status, exc_info=sys.exc_info())
         else:
-            self.send_error(500, exc_info=sys.exc_info())
+            self.send_error(exc_info=sys.exc_info())
 
-    def send_error(self, status=500, **kwargs):
+    def send_error(self, status=ServerError.INTERNAL_SERVER_ERROR, **kwargs):
+        if not isinstance(status, ServerResponseStatus):
+            status = ServerError.UNKNOWN
+
         if self._headers_written:
             gen_log.error("Cannot send error response after headers written")
             if not self._finished:
@@ -132,12 +135,7 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
             if isinstance(exception, HTTPError) and exception.reason:
                 reason = exception.reason
 
-        if isinstance(status, ServerResponseStatus):
-            status_code = status.http_code
-        else:
-            status_code = status
-
-        self.set_status(status_code, reason=reason)
+        self.set_status(status_code=status.http_code, reason=reason)
         try:
             self.write_error(status, **kwargs)
         except Exception:
@@ -145,12 +143,9 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
         if not self._finished:
             self.finish()
 
-    def write_error(self, status=500, **kwargs):
+    def write_error(self, status=ServerError.INTERNAL_SERVER_ERROR, **kwargs):
         if not isinstance(status, ServerResponseStatus):
-            self.set_status(status)
-            status = UNKNOWN_STATUS
-        else:
-            self.set_status(status.http_code)
+            status = ServerError.UNKNOWN
 
         exception = kwargs['exc_info'][1]
         data = None
@@ -175,19 +170,19 @@ class BaseHandler(SessionHandler, ArgumentsMixin):
         self.set_header("Content-Type", "text/plain; charset=UTF-8")
 
     def send_success_response(self, message=None, data=None):
-        self.send_response(status='ok', message=message, data=data)
+        self.send_response(status=ServerError.OK, message=message, data=data)
 
-    def send_response(self, status='ok', message=None, data=None, field=None, field_problem=None):
-        if isinstance(status, ServerResponseStatus):
-            response_status = status
-        else:
-            response_status = get_response_status(status)
+    def send_response(self, status=ServerError.OK, message=None, data=None, field=None, field_problem=None):
+        if not isinstance(status, ServerResponseStatus):
+            status = ServerError.UNKNOWN
 
         if data is None:
             data = {}
 
+        self.set_status(status.http_code)
+
         response = {
-            'status': response_status.alias,
+            'status': status.alias,
             'data': data
         }
 

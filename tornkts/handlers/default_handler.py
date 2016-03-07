@@ -5,4 +5,4 @@ from tornkts.handlers.base_handler import BaseHandler
 class DefaultHandler(BaseHandler):
     def prepare(self):
         super(BaseHandler, self).prepare()
-        raise ServerError('not_found')
+        raise ServerError(ServerError.NOT_FOUND)
