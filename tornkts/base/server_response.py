@@ -24,6 +24,7 @@ class ServerError(Exception):
     AUTH_NOT_REQUIRED = ServerResponseStatus('auth_not_required', 'Authentication not required', 400)
 
     AUTH_REQUIRED = ServerResponseStatus('auth_required', 'Authentication required', 401)
+    ACCESS_DENIED = ServerResponseStatus('access_denied', 'Access denied', 401)
 
     FORBIDDEN = ServerResponseStatus('forbidden', 'Forbidden', 403)
     INVALID_CREDENTIALS = ServerResponseStatus('invalid_credentials', 'Invalid credentials', 403)
@@ -40,6 +41,7 @@ class ServerError(Exception):
     STORAGE_ERROR = ServerResponseStatus('storage_error', 'Storage error', 500)
     INTERNAL_SERVER_ERROR = ServerResponseStatus('internal_error', 'Internal server error', 500)
     UNKNOWN = ServerResponseStatus('unknown_error', 'Unknown error', 500)
+    FILE_SAVE_ERROR = ServerResponseStatus('file_save_error', "Can't save data", 500)
 
     # ------------------------
 

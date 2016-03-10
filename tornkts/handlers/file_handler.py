@@ -37,7 +37,7 @@ def save_file(file_request, file_save_path):
     return save_path_tree, file_name
 
 
-class FileHandler(BaseHandler):
+class FileUploadHandler(BaseHandler):
     @property
     def allowed_extensions(self):
         return []
