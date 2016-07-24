@@ -1,7 +1,7 @@
 class ServerResponseStatus(object):
-    def __init__(self, alias, description, http_code=200):
-        self.alias = alias
-        self.description = description
+    def __init__(self, status_alias, status_description, http_code=200):
+        self.alias = status_alias
+        self.description = status_description
         self.http_code = http_code
 
 
@@ -16,12 +16,43 @@ class ServerError(Exception):
     FIELD_REPEAT = 'repeat'
     FIELD_INVALID = 'invalid'
 
-    def __init__(self, status_alias, description=None, data=None, field=None, field_problem=None):
-        self.status = get_response_status(status_alias)
-        if description is not None:
+    # --- Error Statuses ---
+    OK = ServerResponseStatus('ok', 'OK', 200)
+
+    BAD_REQUEST = ServerResponseStatus('bad_request', 'Bad request', 400)
+    INVALID_PARAMETER = ServerResponseStatus('invalid_param', 'Invalid parameter', 400)
+    AUTH_NOT_REQUIRED = ServerResponseStatus('auth_not_required', 'Authentication not required', 400)
+
+    AUTH_REQUIRED = ServerResponseStatus('auth_required', 'Authentication required', 401)
+    ACCESS_DENIED = ServerResponseStatus('access_denied', 'Access denied', 401)
+
+    FORBIDDEN = ServerResponseStatus('forbidden', 'Forbidden', 403)
+    INVALID_CREDENTIALS = ServerResponseStatus('invalid_credentials', 'Invalid credentials', 403)
+    ROLE_FORBIDDEN = ServerResponseStatus('role_forbidden', 'For your role access denied', 403)
+    ACCOUNT_INACTIVE = ServerResponseStatus('account_not_active', 'Account is not active', 403)
+
+    NOT_FOUND = ServerResponseStatus('not_found', 'Not found', 404)
+
+    NOT_IMPLEMENTED = ServerResponseStatus('not_implemented', 'Not implemented', 405)
+
+    TOO_MANY_REQUESTS = ServerResponseStatus('too_many_requests', 'Too many requests', 429)
+
+    MIX_FIELDS_FILTER = ServerResponseStatus('mix_fields_filter', 'Cannot have a mix of inclusion and exclusion', 500)
+    STORAGE_ERROR = ServerResponseStatus('storage_error', 'Storage error', 500)
+    INTERNAL_SERVER_ERROR = ServerResponseStatus('internal_error', 'Internal server error', 500)
+    UNKNOWN = ServerResponseStatus('unknown_error', 'Unknown error', 500)
+    FILE_SAVE_ERROR = ServerResponseStatus('file_save_error', "Can't save data", 500)
+
+    # ------------------------
+
+    def __init__(self, status, description=None, data=None, field=None, field_problem=None):
+        if not isinstance(status, ServerResponseStatus):
+            status = self.UNKNOWN
+
+        self.status = status
+        self.description = self.status.description
+        if isinstance(description, str):
             self.description = description
-        else:
-            self.description = self.status.description
 
         self.data = data
         self.field = field
@@ -44,38 +75,3 @@ class ServerError(Exception):
 
     def get_field_problem(self):
         return self.field_problem
-
-
-STATUSES = [
-    ServerResponseStatus('ok', 'OK', 200),
-
-    ServerResponseStatus('auth_yet', 'Auth yet', 200),
-    ServerResponseStatus('not_auth', 'Not auth', 403),
-    ServerResponseStatus('role_forbidden', 'For your role access deny', 403),
-    ServerResponseStatus('too_many_requests', 'Too many requests', 403),
-    ServerResponseStatus('account_not_active', 'Account not active', 403),
-
-    ServerResponseStatus('bad_request', 'Bad request', 400),
-    ServerResponseStatus('invalid_param', 'Invalid param', 400),
-    ServerResponseStatus('forbidden', 'Forbidden', 403),
-    ServerResponseStatus('not_found', 'Not found', 404),
-    ServerResponseStatus('not_implemented', 'Not implemented', 405),
-    
-    ServerResponseStatus('mix_fields_filter', 'Cannot have a mix of inclusion and exclusion', 500)
-]
-
-UNKNOWN_STATUS = ServerResponseStatus('unknown_error', 'Unknown error', 500)
-
-
-def get_response_status_by_code(code):
-    for status in STATUSES:
-        if code == status.http_code:
-            return status
-    return UNKNOWN_STATUS
-
-
-def get_response_status(alias):
-    for status in STATUSES:
-        if alias == status.alias:
-            return status
-    return UNKNOWN_STATUS

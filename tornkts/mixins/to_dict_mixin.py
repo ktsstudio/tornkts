@@ -36,7 +36,7 @@ class ToDictMixin(object):
             mode = None
             for v in fields.values():
                 if v != mode and mode is not None:
-                    raise ServerError('mix_fields_filter')
+                    raise ServerError(ServerError.MIX_FIELDS_FILTER)
                 mode = v % 2  # MODE_EXCLUDE or MODE_INCLUDE
 
             for field in dict_object.keys():

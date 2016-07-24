@@ -1,5 +1,5 @@
-from tornkts.base.server_response import ServerError
 from tornkts.base.mongodb.utils import get_object_or_none
+from tornkts.base.server_response import ServerError
 from tornkts.utils import PasswordHelper
 
 
@@ -29,13 +29,13 @@ class AuthMixin(object):
             if admin is not None: break
 
         if admin is None:
-            raise ServerError('auth_invalid_credentials')
+            raise ServerError(ServerError.INVALID_CREDENTIALS)
 
         if self.current_user and self.current_user.role in role:
-            raise ServerError('auth_yet')
+            raise ServerError(ServerError.AUTH_NOT_REQUIRED)
 
         if not PasswordHelper.verify_hash(password, admin.password):
-            raise ServerError('auth_invalid_credentials')
+            raise ServerError(ServerError.INVALID_CREDENTIALS)
 
         self.session_set('user_id', admin.get_id())
         self.session_set('is_auth', True)

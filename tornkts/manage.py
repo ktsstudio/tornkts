@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import logging
 import pkgutil
 import sys
@@ -24,13 +26,19 @@ class Manage(object):
         if command not in self.commands_list():
             logging.error('Command %s not found' % command)
             self.help()
+            return 1
+
+        if command == 'help':
+            self.help()
+            return 0
         try:
             __import__('commands.%s' % command)
             return 0
         except Exception:
             traceback.print_exc()
+            return 1
 
 
 if __name__ == '__main__':
     manage = Manage()
-    manage.run(sys.argv[1])
+    exit(manage.run(sys.argv[1]))
