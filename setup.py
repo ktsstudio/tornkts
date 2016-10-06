@@ -2,7 +2,7 @@ from os import path
 from setuptools import setup, find_packages
 
 here = path.abspath(path.dirname(__file__))
-version='0.9.0'
+version='0.9.1'
 modules = ['tornado', 'torndsession', 'passlib', 'ujson', 'six']
 
 setup(

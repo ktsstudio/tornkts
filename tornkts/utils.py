@@ -1,7 +1,9 @@
 import errno
+import mimetypes
 from datetime import datetime
-
 import os
+
+import six
 from passlib.apps import django10_context as pwd_context
 
 try:
@@ -51,6 +53,56 @@ def now_date():
 def unique_list(target):
     seen = set()
     return [x for x in target if not (x in seen or seen.add(x))]
+
+
+def encode_multipart_formdata(fields=None, files=None):
+    if fields is None:
+        fields = {}
+    if files is None:
+        files = {}
+
+    BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
+    CRLF = '\r\n' if six.PY2 else b'\r\n'
+    L = []
+
+    for (key, value) in fields.items():
+        L.append('--' + BOUNDARY)
+        L.append('Content-Disposition: form-data; name="%s"' % key)
+        L.append('')
+        L.append(value)
+
+    for (key, filename, value) in files:
+        if six.PY2:
+            filename = filename.encode("utf8")
+        L.append('--' + BOUNDARY)
+        L.append(
+            'Content-Disposition: form-data; name="%s"; filename="%s"' % (
+                key, filename
+            )
+        )
+        L.append('Content-Type: %s' % get_content_type(filename))
+        L.append('')
+        L.append(value)
+
+    L.append('--' + BOUNDARY + '--')
+    L.append('')
+
+    if six.PY3:
+        for i in range(len(L)):
+            if isinstance(L[i], int):
+                L[i] = str(L[i])
+            if isinstance(L[i], str):
+                L[i] = str.encode(L[i])
+
+    print(L)
+    body = CRLF.join(L)
+    content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
+
+    return content_type, body
+
+
+def get_content_type(filename):
+    return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
 
 
 class PasswordHelper(object):
