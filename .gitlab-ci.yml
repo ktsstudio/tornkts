@@ -2,5 +2,5 @@ publish:
   only:
     - tags
   script:
-    - python setup.py register -r pypi
-    - python setup.py sdist upload -r pypi
+    - python3.5 setup.py register -r pypi
+    - python3.5 setup.py sdist upload -r pypi
