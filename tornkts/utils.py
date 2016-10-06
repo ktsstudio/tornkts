@@ -94,7 +94,6 @@ def encode_multipart_formdata(fields=None, files=None):
             if isinstance(L[i], str):
                 L[i] = str.encode(L[i])
 
-    print(L)
     body = CRLF.join(L)
     content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
 
