@@ -40,9 +40,9 @@ def json_dumps(data):
 
 
 def json_loads(data):
-    if isinstance(data, str):
+    try:
         return json.loads(data)
-    else:
+    except:
         return None
 
 
